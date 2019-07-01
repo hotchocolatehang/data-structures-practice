@@ -18,7 +18,7 @@ public:
   /**
    * Allocates space for _capacity elements in CircularArray
    */
-  CircularArray(size_t _capacity);
+  explicit CircularArray(size_t _capacity);
 
   /**
    * Stores _capacity elements in CircularArray with value _val.
@@ -50,6 +50,17 @@ public:
    * Returns the last element
    */
   ValueType Back();
+
+  /**
+   * Adds _val at _pos index of the container. Further elements will be moved
+   * forward. No check of index correctness
+   */
+  void InsertAt(ValueType _val, size_t _pos);
+
+  /**
+   * Removes element from a given position. No check of index correctness.
+   */
+  void RemoveAt(size_t _pos);
 
   /**
    * Returns number of elements in the container
@@ -172,6 +183,26 @@ template <typename ValueType>
 ValueType CircularArray<ValueType>::Back()
 {
   return data_array_[tail_ != 0 ? tail_ - 1 : capacity_ - 1];
+};
+
+template <typename ValueType>
+void CircularArray<ValueType>::InsertAt(ValueType _val, size_t _pos)
+{
+  if (size_ == capacity_)
+    ExtandArray();
+  for (size_t i = size_; i > _pos; i--)
+    data_array_[(head_ + i) % capacity_] = (*this)[i - 1];
+  data_array_[(head_ + _pos) % capacity_] = _val;
+  tail_ = (tail_ + 1) % capacity_;
+  size_++;
+};
+
+template <typename ValueType>
+void CircularArray<ValueType>::RemoveAt(size_t _pos)
+{
+  for (size_t i = _pos; i < size_; i++)
+    data_array_[(head_ + i) % capacity_] = (*this)[i + 1];
+  PopBack();
 };
 
 template <typename ValueType>
