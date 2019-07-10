@@ -44,12 +44,12 @@ public:
   /**
    * Returns the first element
    */
-  ValueType Front();
+  ValueType& Front() const;
 
   /**
    * Returns the last element
    */
-  ValueType Back();
+  ValueType& Back() const;
 
   /**
    * Adds _val at _pos index of the container. Further elements will be moved
@@ -65,17 +65,17 @@ public:
   /**
    * Returns number of elements in the container
    */
-  size_t Size();
+  size_t Size() const;
 
   /**
    * Returns size of the allocated array
    */
-  size_t Capacity();
+  size_t Capacity() const;
 
   /**
    * Gives access to any arbitrary element in the container
    */
-  ValueType& operator[](size_t _index);
+  ValueType& operator[](size_t _index) const;
 
 private:
   void ExtandArray();
@@ -174,13 +174,13 @@ void CircularArray<ValueType>::PopBack()
 };
 
 template <typename ValueType>
-ValueType CircularArray<ValueType>::Front()
+ValueType& CircularArray<ValueType>::Front() const
 {
   return data_array_[head_];
 };
 
 template <typename ValueType>
-ValueType CircularArray<ValueType>::Back()
+ValueType& CircularArray<ValueType>::Back() const
 {
   return data_array_[tail_ != 0 ? tail_ - 1 : capacity_ - 1];
 };
@@ -206,19 +206,19 @@ void CircularArray<ValueType>::RemoveAt(size_t _pos)
 };
 
 template <typename ValueType>
-size_t CircularArray<ValueType>::Size()
+size_t CircularArray<ValueType>::Size() const
 {
   return size_;
 };
 
 template <typename ValueType>
-size_t CircularArray<ValueType>::Capacity()
+size_t CircularArray<ValueType>::Capacity() const
 {
   return capacity_;
 };
 
 template <typename ValueType>
-ValueType& CircularArray<ValueType>::operator[] (size_t _index)
+ValueType& CircularArray<ValueType>::operator[] (size_t _index) const
 {
   return data_array_[(head_ + _index) % capacity_];
 };
