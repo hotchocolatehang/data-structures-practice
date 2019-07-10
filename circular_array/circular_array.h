@@ -75,7 +75,7 @@ public:
   /**
    * Gives access to any arbitrary element in the container
    */
-  ValueType operator[](size_t _index);
+  ValueType& operator[](size_t _index);
 
 private:
   void ExtandArray();
@@ -218,7 +218,7 @@ size_t CircularArray<ValueType>::Capacity()
 };
 
 template <typename ValueType>
-ValueType CircularArray<ValueType>::operator[] (size_t _index)
+ValueType& CircularArray<ValueType>::operator[] (size_t _index)
 {
   return data_array_[(head_ + _index) % capacity_];
 };
