@@ -6,6 +6,7 @@ In this repo I implement interesting data structures from the interactive book
 Done:
 
 * Circular array
+* Doubly-linked list
 
 Planned:
 
