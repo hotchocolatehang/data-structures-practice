@@ -1,8 +1,6 @@
 #ifndef HOTCHOCOLATEHANG_LIBS_LIST_H_
 #define HOTCHOCOLATEHANG_LIBS_LIST_H_
 
-// #include <cstdlib>
-
 namespace hotchocolatehang_libs {
 
 template <typename ValueType>
@@ -18,6 +16,8 @@ public:
   List();
   explicit List(size_t _size);
   List(size_t _size, ValueType _val);
+  List(List const& other);
+  List(List const&& other);
   ~List();
 
   void PushFront(ValueType _val);
@@ -29,6 +29,7 @@ public:
   void InsertAt(ValueType _val, size_t _pos);
   void RemoveAt(size_t _pos);
 
+  bool Empty() const;
   size_t Size() const;
 
   ValueType& operator[](size_t _index) const;
@@ -73,6 +74,7 @@ List<ValueType>::List(size_t _size, ValueType _val) :
 {
   head_->prev = nullptr;
   tail_ = head_;
+  head_->value = _val;
   ListNode<ValueType> *temp_next;
   for (size_t i = 1; i < _size; i++, tail_ = temp_next) {
     temp_next = new ListNode<ValueType>;
@@ -83,11 +85,34 @@ List<ValueType>::List(size_t _size, ValueType _val) :
 };
 
 template <typename ValueType>
+List<ValueType>::List(List const& other) :
+  List (other.size_)
+{
+  ListNode<ValueType> *source = other.head_,
+                      *target = head_;
+  for (; source != nullptr; target = target->next, source = source->next)
+    target->value = source->value;
+};
+
+template <typename ValueType>
+List<ValueType>::List(List const&& other) :
+  head_ (other.head_),
+  tail_ (other.tail_),
+  size_ (other.size_)
+{
+  other.head_ = nullptr;
+  other.tail_ = nullptr;
+  other.size_ = 0;
+};
+
+template <typename ValueType>
 List<ValueType>::~List()
 {
-  for (tail_ = tail_->prev; tail_ != nullptr; tail_ = tail_->prev)
-    delete tail_->next;
-  delete head_;
+  if (tail_ != nullptr)
+    for (tail_ = tail_->prev; tail_ != nullptr; tail_ = tail_->prev)
+      delete tail_->next;
+  if (head_ != nullptr)
+    delete head_;
 };
 
 template <typename ValueType>
@@ -97,7 +122,12 @@ void List<ValueType>::PushFront(ValueType _val)
   new_element->value = _val;
   new_element->next = head_;
   new_element->prev = nullptr;
+  if (head_ != nullptr)
+    head_->prev = new_element;
   head_ = new_element;
+  if (tail_ == nullptr)
+    tail_ = new_element;
+  size_++;
 };
 
 template <typename ValueType>
@@ -107,23 +137,42 @@ void List<ValueType>::PushBack(ValueType _val)
   new_element->value = _val;
   new_element->next = nullptr;
   new_element->prev = tail_;
+  if (tail_ != nullptr)
+    tail_->next = new_element;
   tail_ = new_element;
+  if (head_ == nullptr)
+    head_ = new_element;
+  size_++;
 };
 
 template <typename ValueType>
 void List<ValueType>::PopFront()
 {
   ListNode<ValueType> *old_head = head_;
-  head_ = head_->next;
+  if (head_ == tail_) {
+    head_ = tail_ = nullptr;
+  }
+  else {
+    head_ = head_->next;
+    head_->prev = nullptr;
+  }
   delete old_head;
+  size_--;
 };
 
 template <typename ValueType>
 void List<ValueType>::PopBack()
 {
   ListNode<ValueType> *old_tail = tail_;
-  tail_ = tail_->next;
+  if (head_ == tail_) {
+    head_ = tail_ = nullptr;
+  }
+  else {
+    tail_ = tail_->prev;
+    tail_->next = nullptr;
+  }
   delete old_tail;
+  size_--;
 };
 
 template <typename ValueType>
@@ -144,12 +193,14 @@ void List<ValueType>::InsertAt(ValueType _val, size_t _pos)
   ListNode<ValueType> *new_element = new ListNode<ValueType>,
                       *prev_insert = head_;
   new_element->value = _val;
-  for (size_t i = 0; i < _pos - 1; i++)
-    prev_insert = prev_insert->next;
+  if (_pos > 0)
+    for (size_t i = 0; i < _pos - 1; i++)
+      prev_insert = prev_insert->next;
   new_element->prev = prev_insert;
   new_element->next = prev_insert->next;
   prev_insert->next = new_element;
   new_element->next->prev = new_element;
+  size_++;
 };
 
 template <typename ValueType>
@@ -158,15 +209,42 @@ void List<ValueType>::RemoveAt(size_t _pos)
   ListNode<ValueType> *to_delete = head_;
   for (size_t i = 0; i < _pos; i++)
     to_delete = to_delete->next;
-  to_delete->prev->next = to_delete->next;
-  to_delete->next->prev = to_delete->prev;
+  if (to_delete == head_)
+    head_ = head_->next;
+  else if (to_delete == tail_)
+    tail_ = tail_->prev;
+  
+  // awful code, I believe it can be expressed in a smarter way:
+  if (to_delete->prev != nullptr) {
+    to_delete->prev->next = to_delete->next;
+  }
+  else {
+    if (to_delete->next != nullptr)
+      to_delete->next->prev = nullptr;
+  }
+
+  if (to_delete->next != nullptr) {
+    to_delete->next->prev = to_delete->prev;
+  }
+  else {
+    if (to_delete->prev != nullptr)
+      to_delete->prev->next = nullptr;
+  }
+
   delete to_delete;
+  size_--;
 };
 
 template <typename ValueType>
 size_t List<ValueType>::Size() const
 {
   return size_;
+};
+
+template <typename ValueType>
+bool List<ValueType>::Empty() const
+{
+  return size_ == 0;
 };
 
 template <typename ValueType>

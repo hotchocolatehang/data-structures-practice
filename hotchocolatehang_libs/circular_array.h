@@ -73,6 +73,11 @@ public:
   size_t Capacity() const;
 
   /**
+   * Returns true if CircularArray is empty
+   */
+  bool Empty() const;
+
+  /**
    * Gives access to any arbitrary element in the container
    */
   ValueType& operator[](size_t _index) const;
@@ -215,6 +220,12 @@ template <typename ValueType>
 size_t CircularArray<ValueType>::Capacity() const
 {
   return capacity_;
+};
+
+template <typename ValueType>
+bool CircularArray<ValueType>::Empty() const
+{
+  return size_ == 0;
 };
 
 template <typename ValueType>
