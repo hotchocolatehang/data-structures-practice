@@ -33,6 +33,77 @@ public:
   size_t Size() const;
 
   ValueType& operator[](size_t _index) const;
+
+  class iterator : public std::iterator<std::bidirectional_iterator_tag, ValueType>
+  {
+  public:
+    friend class List<ValueType>;
+    ListNode<ValueType> *curr;
+
+    typedef ValueType value_type;
+    typedef ValueType& reference;
+    typedef ValueType* pointer;
+    typedef ValueType difference_type;
+    typedef std::bidirectional_iterator_tag iterator_category;
+
+    iterator (ListNode<ValueType> *x) : 
+      curr (x)
+    {
+
+    };
+
+    bool operator== (iterator const& other) const 
+    {
+      return curr == other.curr;
+    };
+
+    bool operator!= (iterator const& other) const 
+    {
+      return curr != other.curr;
+    };
+
+    reference operator*() const 
+    {
+      return curr->value;
+    };
+
+    iterator& operator++() 
+    {
+      curr = curr->next;
+      return *this;
+    };
+
+    iterator& operator++(int) 
+    {
+      iterator tmp(curr);
+      curr = curr->next;
+      return tmp;
+    };
+
+    iterator& operator--() 
+    {
+      curr = curr->prev;
+      return *this;
+    };
+
+    iterator& operator--(int) 
+    {
+      iterator tmp(curr);
+      curr = curr->prev;
+      return tmp;
+    };
+  };
+
+  iterator begin()
+  {
+    return iterator(head_);
+  };
+
+  iterator end() 
+  {
+    return iterator(nullptr);
+  };
+
 private:
   ListNode<ValueType> *head_,
                       *tail_;
