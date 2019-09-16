@@ -1,7 +1,7 @@
-#ifndef HOTCHOCOLATEHANG_LIBS_LIST_H_
-#define HOTCHOCOLATEHANG_LIBS_LIST_H_
+#ifndef COBSEA_LIBS_LIST_H_
+#define COBSEA_LIBS_LIST_H_
 
-namespace hotchocolatehang_libs {
+namespace cobsea_libs {
 
 template <typename ValueType>
 struct ListNode {
@@ -13,11 +13,14 @@ struct ListNode {
 template <typename ValueType>
 class List {
 public:
+
+  using value_type = ValueType;
+
   List();
   explicit List(size_t _size);
   List(size_t _size, ValueType _val);
   List(List const& other);
-  List(List const&& other);
+  List(List const&& other) noexcept;
   ~List();
 
   void PushFront(ValueType _val);
@@ -166,7 +169,7 @@ List<ValueType>::List(List const& other) :
 };
 
 template <typename ValueType>
-List<ValueType>::List(List const&& other) :
+List<ValueType>::List(List const&& other) noexcept :
   head_ (other.head_),
   tail_ (other.tail_),
   size_ (other.size_)
@@ -327,6 +330,6 @@ ValueType& List<ValueType>::operator[](size_t _index) const
   return target->value;
 };
 
-}; // namespace hotchocolatehang_libs
+}; // namespace cobsea_libs
 
 #endif // HOTCHOCOLATEHANG_LIBS_LIST_H_

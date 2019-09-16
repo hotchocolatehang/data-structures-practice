@@ -1,8 +1,9 @@
 #include <iostream>
+#include <algorithm>
 
-#include "circular_array/circular_array.h"
+#include "cobsea_libs/circular_array.h"
 
-using namespace hotchocolatehang_libs;
+using namespace cobsea_libs;
 
 template <typename T>
 void PrintContainerSizeState(T &arr)
@@ -11,6 +12,16 @@ void PrintContainerSizeState(T &arr)
             << "; size: " << arr.Size() 
             << "; unused: " << arr.Capacity() - arr.Size()
             << "." << std::endl;
+};
+
+template <typename T>
+void PrintCircularArray(CircularArray<T> arr)
+{
+  std::for_each(arr.begin(), arr.end(), [](auto x) {
+    std::cout << x << " ";
+  });
+  std::cout << std::endl;
+  PrintContainerSizeState(arr);
 };
 
 int main() {
@@ -34,6 +45,7 @@ int main() {
 
   std::cout << "\n";
   PrintContainerSizeState(circular_array);
+  PrintCircularArray(circular_array);
 
   return 0;
 }

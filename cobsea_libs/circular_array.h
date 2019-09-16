@@ -5,10 +5,10 @@
  * or back.
  */
 
-#ifndef HOTCHOCOLATEHANG_LIBS_CIRCULAR_ARRAY_H_
-#define HOTCHOCOLATEHANG_LIBS_CIRCULAR_ARRAY_H_
+#ifndef COBSEA_LIBS_CIRCULAR_ARRAY_H_
+#define COBSEA_LIBS_CIRCULAR_ARRAY_H_
 
-namespace hotchocolatehang_libs {
+namespace cobsea_libs {
 
 template <typename ValueType>
 class CircularArray {
@@ -25,6 +25,9 @@ public:
    * Be careful with RAII classes
    */
   CircularArray(size_t _capacity, ValueType _val);
+
+  CircularArray(CircularArray<ValueType> const & other);
+  CircularArray(CircularArray<ValueType> const && other) noexcept;
 
   ~CircularArray();
 
@@ -82,6 +85,79 @@ public:
    */
   ValueType& operator[](size_t _index) const;
 
+  class iterator : public std::iterator<std::random_access_iterator_tag, ValueType>
+  {
+  public:
+    friend class CircularArray<ValueType>;
+
+    typedef ValueType value_type;
+    typedef ValueType& reference;
+    typedef ValueType* pointer;
+    typedef ValueType difference_type;
+    typedef std::random_access_iterator_tag iterator_category;
+
+    CircularArray<value_type>* array_ptr;
+    size_t idx;
+
+    iterator (CircularArray<value_type>* _ptr, size_t _idx) : 
+      array_ptr(_ptr),
+      idx(_idx)
+    {
+
+    };
+
+    bool operator== (iterator const& other) const 
+    {
+      return array_ptr == other.array_ptr && idx == other.idx;
+    };
+
+    bool operator!= (iterator const& other) const 
+    {
+      return array_ptr != other.array_ptr || idx != other.idx;
+    };
+
+    reference operator*() const 
+    {
+      return (*array_ptr)[idx];
+    };
+
+    iterator& operator++() 
+    {
+      idx++;
+      return *this;
+    };
+
+    iterator& operator++(int) 
+    {
+      iterator tmp(array_ptr, idx);
+      idx++;
+      return tmp;
+    };
+
+    iterator& operator--() 
+    {
+      idx--;
+      return *this;
+    };
+
+    iterator& operator--(int) 
+    {
+      iterator tmp(array_ptr, idx);
+      idx--;
+      return tmp;
+    };
+  };
+
+  iterator begin()
+  {
+    return iterator(this, 0);
+  };
+
+  iterator end() 
+  {
+    return iterator(this, size_);
+  };
+
 private:
   void ExtandArray();
 
@@ -128,6 +204,32 @@ CircularArray<ValueType>::CircularArray(size_t _capacity, ValueType _val) :
 {
   for (size_t i = 0; i < _capacity; i++)
     data_array_[i] = _val;
+};
+
+template <typename ValueType>
+CircularArray<ValueType>::CircularArray(CircularArray<ValueType> const & other) :
+  data_array_ (new ValueType[other.size_]),
+  head_ (0),
+  tail_ (other.size_ - 1),
+  size_ (other.size_),
+  capacity_ (other.size_)
+{
+  for (size_t i = 0; i < other.size_; i++) {
+    data_array_[i] = other[i];
+  }
+};
+
+template <typename ValueType>
+CircularArray<ValueType>::CircularArray(CircularArray<ValueType> const && other) noexcept :
+  data_array_ (other.data_array_),
+  head_ (other.head_),
+  tail_ (other.tail_),
+  size_ (other.size_),
+  capacity_ (other.capacity_)
+{
+  other.data_array_ = nullptr;
+  other.size_ = 0;
+  other.capacity_ = 0;
 };
 
 template <typename ValueType>
@@ -251,6 +353,6 @@ void CircularArray<ValueType>::ExtandArray()
   capacity_ *= 2;
 };
 
-}; // namespace hotchocolatehang_libs
+}; // namespace cobsea_libs
 
 #endif // HOTCHOCOLATEHANG_LIBS_CIRCULAR_ARRAY_H_

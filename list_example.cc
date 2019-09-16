@@ -1,13 +1,13 @@
 #include <iostream>
-
-#include "list/list.h"
-#include "construct_test_class/construct_test_class.h"
-using namespace hotchocolatehang_libs;
+#include <algorithm>
+#include "cobsea_libs/list.h"
+using namespace cobsea_libs;
 
 template<typename T>
 void PrintList(List<T> l) {
-  for (size_t i = 0; i < l.Size(); i++)
-    std::cout << l[i] << " ";
+  std::for_each(l.begin(), l.end(), [](auto x) {
+    std::cout << x << " ";
+  });
   std::cout << std::endl;
 }
 
