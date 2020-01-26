@@ -3,12 +3,7 @@ In this repo I implement interesting data structures from the interactive book
 
 "Data Structures" - Niema Moshiri and Liz Izhikevich.
 
-Done:
-
-* Circular array
-* Doubly-linked list
-
-Planned:
-
-* Some trees
-* Hash maps maybe
+- [x] Circular array
+- [x] Doubly-linked list
+- [ ] Red-Black tree
+- [ ] Hash map
